@@ -7,12 +7,12 @@ const app = express()
 app.use(routes)
 app.use(express.json())
 
-const run = async () => {
-  let rows = await oracle.run()
-  rows.forEach(element => {
-    console.log(element)
-  })
-}
+// const run = async () => {
+//   let rows = await oracle.run()
+//   rows.forEach(element => {
+//     console.log(element)
+//   })
+// }
 
 //run()
 app.listen(3000)

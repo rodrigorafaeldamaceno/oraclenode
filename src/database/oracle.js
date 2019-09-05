@@ -15,17 +15,14 @@ module.exports = {
       })
       console.log("Success in connecting")
 
-      const sql = 'select cnpj from fr_ar_prospects_cisp order by cnpj'
+      const sql = 'select substr(lpad(us.cnpj,14,0),0,8) as cnpj from fr_ar_prospects_cisp us order by us.cnpj'
       const result = await connection.execute(
-        // The statement to execute
         sql,
         {},
         {
           maxRows: 10
         })
-      //console.log(result.metaData) // [ { name: 'DEPARTMENT_ID' }, { name: 'DEPARTMENT_NAME' } ]
 
-      //console.log(result.rows)
       return result.rows
 
     } catch (err) {
@@ -43,21 +40,6 @@ module.exports = {
       }
     }
   }
-  /*,
-  async queryCNPJ() {
-    const sql = 'select cnpj from fr_ar_prospects_cisp order by cnpj'
-    const result = await connection.execute(
-      // The statement to execute
-      sql,
-      {},
-      {
-        maxRows: 10
-      })
-    //console.log(result.metaData) // [ { name: 'DEPARTMENT_ID' }, { name: 'DEPARTMENT_NAME' } ]
-
-    // console.log(result.rows)
-    return result.rows
-  }*/
 }
 
 
