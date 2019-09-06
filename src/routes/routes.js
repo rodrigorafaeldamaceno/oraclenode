@@ -11,5 +11,6 @@ routes.get('/', (req, res) => {
 
 routes.get("/cnpj/:id", apiController.findCnpj)
 routes.get("/cnpj", apiController.findAll)
+routes.get("/cnpjUpdate", apiController.findAndUpdate)
 
 module.exports = routes
