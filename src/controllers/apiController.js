@@ -8,7 +8,7 @@ const config = {
 }
 
 // 77595395
-module.exports = {
+const apiController = {
   async findCnpj(req, res) {
     //console.log(req.params.id)
     const response = await axios.get(
@@ -38,26 +38,36 @@ module.exports = {
 
   },
   async findAndUpdate(req, res) {
-    const list = []
-    const rows = await oracle.run()
-    //console.log(rows.length)
+    try {
+      const list = []
+      const rows = await oracle.run()
+      // console.log(rows.length)
 
-    for (let i = 0; i < rows.length; i++) {
-      const response = await axios.get(
-        `https://servicos.cisp.com.br/v1/avaliacao-analitica/raiz/${rows[i]}`,
-        config
-      )
-      // console.log(`CNPJ: ${rows[i]}`)
-      // console.log(response.data.cliente.razaoSocial)
-      await oracle.update(JSON.stringify(response.data), rows[i].toString())
+      for (let i = 0; i < rows.length; i++) {
 
-      list.push(response.data)
-      // console.log(i)
-      await delay(333)
+        const response = await axios.get(
+          `https://servicos.cisp.com.br/v1/avaliacao-analitica/raiz/${rows[i]}`,
+          config
+        )
+
+        // console.log(`CNPJ: ${rows[i]}`)
+        // console.log(response.data.cliente.razaoSocial)
+        await oracle.update(JSON.stringify(response.data), rows[i].toString())
+
+        list.push(response.data)
+        console.log(`${i}: ${rows[i]}`)
+
+        await delay(333)
+
+      }
+      console.log("Request complete")
+      return res.send({ Registros: list.length })
+    } catch (err) {
+      console.log("error")
+      await delay(300000)
+      await apiController.findAndUpdate(req, res)
     }
-    console.log("Request complete")
-    return res.send(list)
   }
 }
 
-
+module.exports = apiController

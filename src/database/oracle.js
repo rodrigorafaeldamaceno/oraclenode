@@ -16,14 +16,18 @@ module.exports = {
       console.log("Success in connecting")
 
       // TODO: Refactory this method
-      const sql = `select substr(lpad(us.cnpj,14,0),0,8) as cnpj from fr_ar_prospects_cisp us where SYNC_CISP is null order by us.cnpj`
+      const sql = `select substr(lpad(us.cnpj,14,0),0,8) as cnpj 
+                    from fr_ar_prospects_cisp us 
+                    where SYNC_CISP is null 
+                    and RAZAO_SOCIAL IS NOT NULL
+                    -- and us.CNAE = '47.11-3-02'
+                    order by us.cnpj`
       const result = await connection.execute(
         sql,
         {},
         {
-          maxRows: 1
+          maxRows: 20000
         })
-
       return result.rows
 
     } catch (err) {
@@ -43,13 +47,13 @@ module.exports = {
   },
   async update(result, cnpj) {
 
-    console.log(cnpj)
-    //console.log(cnpj.toString())
+    // console.log(cnpj)
+    // console.log(cnpj.toString())
 
     let connection = {}
     const sqlTest = `UPDATE FR_TESTE_NODEJS SET SYNC = 'S', CISP = :resul tWHERE substr(lpad(cnpj,14,0),0,8) = :cnpj`
     const sql = `UPDATE fr_ar_prospects_cisp 
-                  SET SYNC_CISP = 'S', CISP_AVALIACAO = :result 
+                  SET SYNC_CISP = 'S', CISP_AVALIACAO = :result, DATA_SYNC = SYSDATE
                   WHERE substr(lpad(cnpj,14,0),0,8) = :cnpj
                   `
     try {
@@ -59,14 +63,14 @@ module.exports = {
         password: dbConfig.password,
         connectString: dbConfig.connectString
       })
-      console.log("Success in connecting")
+      // console.log("Success in connecting")
 
       let response = await connection.execute(
         sql,
         [result, cnpj],
         { autoCommit: true });  // commit once for all DML in the script
 
-      console.log("Rows updated: " + response.rowsAffected); // 2
+      // console.log("Rows updated: " + response.rowsAffected); // 2
 
       // console.log(JSON.stringify(result))
 
@@ -78,7 +82,7 @@ module.exports = {
       if (connection) {
         try {
           await connection.close()
-          console.log('Connection closed')
+          // console.log('Connection closed')
         } catch (err) {
           console.error(err)
         }
